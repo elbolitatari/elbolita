@@ -4,14 +4,13 @@
   <meta charset="UTF-8">
   <title>Live HTML Editor with Local Save</title>
   <style>
-    /* Full viewport styling */
     html, body {
       height: 100%;
       margin: 0;
       padding: 0;
       overflow: hidden;
     }
-    /* Fullscreen preview area */
+
     #preview {
       position: absolute;
       top: 0;
@@ -21,7 +20,7 @@
       border: none;
       z-index: 0;
     }
-    /* Floating code editor container */
+
     #editor {
       position: absolute;
       top: 20px;
@@ -35,7 +34,7 @@
       overflow: auto;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
     }
-    /* Header with drag handle and save button */
+
     #editorHeader {
       cursor: move;
       background: #333;
@@ -47,6 +46,7 @@
       align-items: center;
       user-select: none;
     }
+
     #editorHeader button {
       background: #555;
       border: none;
@@ -55,7 +55,7 @@
       cursor: pointer;
       font-size: 12px;
     }
-    /* Code textarea styling */
+
     #editor textarea {
       width: 100%;
       height: calc(100% - 35px);
@@ -71,10 +71,8 @@
   </style>
 </head>
 <body>
-  <!-- Fullscreen preview: updates automatically -->
   <iframe id="preview"></iframe>
 
-  <!-- Floating, draggable, and resizable code editor -->
   <div id="editor">
     <div id="editorHeader">
       <span>Drag Me</span>
@@ -99,20 +97,17 @@
   </div>
 
   <script>
-    // Update the preview iframe using the code from the textarea.
     function updatePreview() {
       const code = document.getElementById("codeEditor").value;
       document.getElementById("preview").srcdoc = code;
     }
 
-    // Auto-save code to localStorage and update preview on every input.
     const codeEditor = document.getElementById("codeEditor");
     codeEditor.addEventListener("input", () => {
       updatePreview();
       localStorage.setItem("livecodingCode", codeEditor.value);
     });
 
-    // On page load, check for saved code and update accordingly.
     window.addEventListener("DOMContentLoaded", () => {
       const savedCode = localStorage.getItem("livecodingCode");
       if (savedCode) {
@@ -121,7 +116,6 @@
       updatePreview();
     });
 
-    // Allow downloading the current code as an HTML file.
     document.getElementById("downloadBtn").addEventListener("click", () => {
       const code = codeEditor.value;
       const blob = new Blob([code], { type: "text/html" });
@@ -134,29 +128,41 @@
       document.body.removeChild(a);
     });
 
-    // Drag functionality for the editor container.
-    (function() {
+    // Mobile + desktop drag support
+    (function () {
       const editor = document.getElementById("editor");
       const header = document.getElementById("editorHeader");
       let dragging = false, offsetX = 0, offsetY = 0;
 
-      header.addEventListener("mousedown", (e) => {
+      function startDrag(e) {
         dragging = true;
         const rect = editor.getBoundingClientRect();
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
-      });
+        const clientX = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
+        offsetX = clientX - rect.left;
+        offsetY = clientY - rect.top;
+        e.preventDefault();
+      }
 
-      document.addEventListener("mousemove", (e) => {
-        if (dragging) {
-          editor.style.left = (e.clientX - offsetX) + "px";
-          editor.style.top = (e.clientY - offsetY) + "px";
-        }
-      });
+      function onDrag(e) {
+        if (!dragging) return;
+        const clientX = e.type.startsWith("touch") ? e.touches[0].clientX : e.clientX;
+        const clientY = e.type.startsWith("touch") ? e.touches[0].clientY : e.clientY;
+        editor.style.left = `${clientX - offsetX}px`;
+        editor.style.top = `${clientY - offsetY}px`;
+        e.preventDefault();
+      }
 
-      document.addEventListener("mouseup", () => {
+      function stopDrag() {
         dragging = false;
-      });
+      }
+
+      header.addEventListener("mousedown", startDrag);
+      header.addEventListener("touchstart", startDrag);
+      document.addEventListener("mousemove", onDrag);
+      document.addEventListener("mouseup", stopDrag);
+      document.addEventListener("touchmove", onDrag, { passive: false });
+      document.addEventListener("touchend", stopDrag);
     })();
   </script>
 </body>
