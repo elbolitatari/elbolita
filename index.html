@@ -102,19 +102,6 @@
       document.getElementById("preview").srcdoc = code;
     }
 
-    const codeEditor = document.getElementById("codeEditor");
-    codeEditor.addEventListener("input", () => {
-      updatePreview();
-      localStorage.setItem("livecodingCode", codeEditor.value);
-    });
-
-    window.addEventListener("DOMContentLoaded", () => {
-      const savedCode = localStorage.getItem("livecodingCode");
-      if (savedCode) {
-        codeEditor.value = savedCode;
-      }
-      updatePreview();
-    });
 
     document.getElementById("downloadBtn").addEventListener("click", () => {
       const code = codeEditor.value;
@@ -167,6 +154,7 @@
   </script>
 </body>
 </html>
+
 
 
 
