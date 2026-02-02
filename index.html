@@ -71,6 +71,30 @@
   </style>
 </head>
 <body>
+<iframe id="preview"></iframe>
+
+  <div id="editor">
+    <div id="editorHeader">
+      <span>Drag Me</span>
+      <button id="downloadBtn" title="Download Code">Save Code</button>
+    </div>
+    <textarea id="codeEditor">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Preview</title>
+  <style>
+    body { background: #f0f0f0; color: #333; text-align: center; padding-top: 50px; }
+  </style>
+</head>
+<body>
+  <h1>Hello, World!</h1>
+  <p>This live preview updates automatically as you edit the code!</p>
+</body>
+</html>
+    </textarea>
+  </div>
 
   <script>
     function updatePreview() {
@@ -143,5 +167,6 @@
   </script>
 </body>
 </html>
+
 
 
